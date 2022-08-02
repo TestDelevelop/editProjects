@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add Issues to Project
-      - uses: alex-page/github-project-automation-plus@v0.3.0
+        uses: alex-page/github-project-automation-plus@v0.3.0
         with:
           project: testProject
           column: table1
