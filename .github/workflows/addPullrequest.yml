@@ -45,6 +45,9 @@ jobs:
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Date posted") | .id' project_data.json) >> $GITHUB_ENV
           echo 'STATUS_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
           echo 'TODO_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .options[] | select(.name=="Todo") |.id' project_data.json) >> $GITHUB_ENV
+          
+      - name: "Projects側の取得した情報出力 あとで削除"
+        run: |
           echo ${{ env.PROJECT_ID}}
           echo ${{ env.DATE_FIELD_ID}}
           echo ${{ env.STATUS_FIELD_ID}}
