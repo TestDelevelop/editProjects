@@ -1,14 +1,22 @@
 name: Add Issues to Project
 
 on:
-  pull_request:
-    types:
-      - ready_for_review
+  # 本番
+  # pull_request:
+  #   types:
+  #     - ready_for_review
+  # 削除
+  push:
+    branches:
+      - "branch"
 
 jobs:
   track_pr:
     runs-on: ubuntu-latest
     steps:
+      - name: "ファイル作成用終了コマンドあとで削除"
+        run: exit 1
+
       - name: Get project data
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
