@@ -48,10 +48,8 @@ jobs:
           
       - name: "Projects側の取得した情報出力 あとで削除"
         run: |
-          echo ${{ env.PROJECT_ID}}
-          echo ${{ env.DATE_FIELD_ID}}
-          echo ${{ env.STATUS_FIELD_ID}}
-          echo ${{ env.TODO_OPTION_ID}}
+          test=$(cat project_data.json)
+          echo $test
 
       # - name: Add PR to project
       #   env:
