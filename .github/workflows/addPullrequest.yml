@@ -73,6 +73,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
+          echo $input
           gh api graphql -f query='
             mutation (
               $project: ID!
@@ -93,7 +94,6 @@ jobs:
                 projectV2Item {
                   id
                   }
-                  echo $item
               }
               set_date_posted: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
