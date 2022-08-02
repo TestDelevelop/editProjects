@@ -9,6 +9,7 @@ jobs:
   track_pr:
     runs-on: ubuntu-latest
     steps:
+
       - name: Get project data
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
