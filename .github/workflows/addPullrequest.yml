@@ -45,8 +45,10 @@ jobs:
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Date posted") | .id' project_data.json) >> $GITHUB_ENV
           echo 'STATUS_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
           echo 'TODO_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .options[] | select(.name=="Todo") |.id' project_data.json) >> $GITHUB_ENV
-          test=$(cat project_data.json)
-          echo "$test"
+          echo ${{ env.PROJECT_ID}}
+          echo ${{ env.DATE_FIELD_ID}}
+          echo ${{ env.STATUS_FIELD_ID}}
+          echo ${{ env.TODO_OPTION_ID}}
 
       - name: Add PR to project
         env:
@@ -91,6 +93,7 @@ jobs:
                 projectV2Item {
                   id
                   }
+                  echo $item
               }
               set_date_posted: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
