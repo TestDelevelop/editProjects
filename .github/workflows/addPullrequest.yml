@@ -81,7 +81,7 @@ jobs:
               $date_field: ID!
               $date_value: Date!
               $comments_field: ID!
-              $comments_value: Int!
+              $comments_value: Float!
             ) {
               set_status: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
