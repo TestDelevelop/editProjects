@@ -42,7 +42,6 @@ jobs:
 
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'COMMENTS_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Comments") | .id' project_data.json) >> $GITHUB_ENV
           echo 'STATUS_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
           echo 'TODO_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .options[] | select(.name=="Todo") |.id' project_data.json) >> $GITHUB_ENV
 
@@ -65,18 +64,10 @@ jobs:
       - name: Get date
         run: echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
 
-      - name: Get Comment Count
-        run: |
-          echo "COMMENTS=${{ github.event.pull_request.review_comments }}" >> $GITHUB_ENV
-
       - name: Set fields
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
-          def self.type_from_ast(*args)
-            type = super
-            type == GraphQL::Types::Int ? type.to_graphql : type
-          end
           gh api graphql -f query='
             mutation (
               $project: ID!
@@ -85,8 +76,6 @@ jobs:
               $status_value: String!
               $date_field: ID!
               $date_value: Date!
-              $comments_field: ID!
-              $comments_value: Int!
             ) {
               set_status: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
@@ -112,16 +101,4 @@ jobs:
                   id
                 }
               }
-              set_comments_posted: updateProjectV2ItemFieldValue(input: {
-                projectId: $project
-                itemId: $item
-                fieldId: $comments_field
-                value: {
-                  number: $comments_value
-                }
-              }) {
-                projectV2Item {
-                  id
-                }
-              }
-            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f status_field=$STATUS_FIELD_ID -f status_value=${{ env.TODO_OPTION_ID }} -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f comments_field=$COMMENTS_FIELD_ID -f comments_value=$COMMENTS --silent
+            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f status_field=$STATUS_FIELD_ID -f status_value=${{ env.TODO_OPTION_ID }} -f date_field=$DATE_FIELD_ID -f date_value=$DATE --silent
