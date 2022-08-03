@@ -112,7 +112,7 @@ jobs:
                 itemId: $item
                 fieldId: $comments_field
                 value: {
-                  singleSelectOptionId: $comments_value
+                  number: $comments_value
                 }
               }) {
                 projectV2Item {
