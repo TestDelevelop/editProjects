@@ -1,4 +1,4 @@
-name: Add Issues to Project
+name: Add Pull Request to Project
 
 on:
   pull_request:
@@ -9,10 +9,10 @@ jobs:
   track_pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Get project data
+      - name: Get Project data
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-          ORGANIZATION: TestDelevelop
+          ORGANIZATION: ${{ secrets.ORGANIZATION }}
           PROJECT_NUMBER: 1
         run: |
           gh api graphql -f query='
@@ -41,12 +41,16 @@ jobs:
             }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
 
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
-          echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Date posted") | .id' project_data.json) >> $GITHUB_ENV
+          echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
           echo 'STATUS_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
           echo 'TODO_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .options[] | select(.name=="Todo") |.id' project_data.json) >> $GITHUB_ENV
-          echo ${{env}}
 
-      - name: Add PR to project
+      - name: "Projects側の取得した情報出力 あとで削除"
+        run: |
+          test=$(cat project_data.json)
+          echo "$test"
+
+      - name: Add PR to Projects
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
           PR_ID: ${{ github.event.pull_request.node_id }}
@@ -82,7 +86,7 @@ jobs:
                 projectId: $project
                 itemId: $item
                 fieldId: $status_field
-                value: { 
+                value: {
                   singleSelectOptionId: $status_value
                   }
               }) {
@@ -94,7 +98,7 @@ jobs:
                 projectId: $project
                 itemId: $item
                 fieldId: $date_field
-                value: { 
+                value: {
                   date: $date_value
                 }
               }) {
