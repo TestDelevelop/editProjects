@@ -48,12 +48,12 @@ jobs:
       - name: "Projects側の取得した情報出力 あとで削除"
         run: |
           test=$(cat project_data.json)
-          echo $test
+          echo "$test"
 
       - name: "PullRequest側の取得した情報出力 あとで削除"
         run: |
           pr=${{toJSON(github.event.pull_request)}}
-          echo $pr
+          echo "$pr"
 
       - name: Add PR to Projects
         env:
