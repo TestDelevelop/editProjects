@@ -47,7 +47,7 @@ jobs:
 
       - name: あとで削除
         run: |
-          test=${{ toJSON(github.event) }}
+          test=${{ toJSON(github) }}
           echo "$test"
 
 
