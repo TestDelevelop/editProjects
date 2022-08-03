@@ -66,7 +66,10 @@ jobs:
         run: echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
 
       - name: Get Comment Count
-        run: echo "COMMENTS=${{ github.event.pull_request.review_comments }}" >> $GITHUB_ENV
+        run: |
+          test=${{ github.event.pull_request.review_comments }}
+          echo $test
+          echo "COMMENTS=${{ github.event.pull_request.review_comments }}" >> $GITHUB_ENV
 
       - name: Set fields
         env:
