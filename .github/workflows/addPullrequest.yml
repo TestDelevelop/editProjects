@@ -45,11 +45,6 @@ jobs:
           echo 'STATUS_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
           echo 'TODO_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Status") | .options[] | select(.name=="Open") |.id' project_data.json) >> $GITHUB_ENV
 
-      - name: あとで削除
-        run: |
-          test=${{ toJSON(github.event.pull_request) }}
-          echo "$test"
-
       - name: Add PR to Projects
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
