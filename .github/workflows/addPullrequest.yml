@@ -47,7 +47,7 @@ jobs:
 
       - name: あとで削除
         run: |
-          test=${{ toJSON(github.event.pull_request) }}
+          test=${{ toJSON(github.event) }}
           echo "$test"
 
       - name: Add PR to Projects
