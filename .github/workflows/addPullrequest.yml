@@ -67,7 +67,7 @@ jobs:
 
       - name: Get Comment Count
         run: |
-          test=${{ github.event.pull_request.review_comments }}
+          test=${{ toJSON(github.event.pull_request.review_comments) }}
           echo $test
           echo "COMMENTS=${{ github.event.pull_request.review_comments }}" >> $GITHUB_ENV
 
