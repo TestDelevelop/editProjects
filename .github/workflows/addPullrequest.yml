@@ -47,8 +47,8 @@ jobs:
 
       - name: あとで削除
         run: |
-          test=$(cat project_data.json)
-          echo $test
+          test=${{ toJSON(github.event.pull_request) }}
+          echo "$test"
 
       - name: Add PR to Projects
         env:
