@@ -73,6 +73,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
+          def self.type_from_ast(*args)
+            type = super
+            type == GraphQL::Types::Int ? type.to_graphql : type
+          end
           gh api graphql -f query='
             mutation (
               $project: ID!
