@@ -81,7 +81,7 @@ jobs:
               $date_field: ID!
               $date_value: Date!
               $comments_field: ID!
-              $comments_value: Number!
+              $comments_value: String!
             ) {
               set_status: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
@@ -112,7 +112,7 @@ jobs:
                 itemId: $item
                 fieldId: $comments_field
                 value: {
-                  comments: $comments_value
+                  singleSelectOptionId: $comments_value
                 }
               }) {
                 projectV2Item {
