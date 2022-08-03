@@ -67,8 +67,6 @@ jobs:
 
       - name: Get Comment Count
         run: |
-          test=${{ toJSON(github.event.pull_request) }}
-          echo $test
           echo "COMMENTS=${{ github.event.pull_request.review_comments }}" >> $GITHUB_ENV
 
       - name: Set fields
@@ -84,7 +82,7 @@ jobs:
               $date_field: ID!
               $date_value: Date!
               $comments_field: ID!
-              $comments_value: Float!
+              $comments_value: Int!
             ) {
               set_status: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
