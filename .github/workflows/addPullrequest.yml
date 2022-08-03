@@ -47,6 +47,7 @@ jobs:
 
       - name: あとで削除
         run: |
+          echo 'aaa'
           test=${{ toJSON(github.event.pull_request) }}
           echo "$test"
 
