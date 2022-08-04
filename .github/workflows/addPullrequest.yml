@@ -62,7 +62,7 @@ jobs:
 
             echo 'ITEM_ID='$item_id >> $GITHUB_ENV
 
-      - name: Get date
+      - name: Get Date
         run: echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
 
       - name: Get Comment Count
