@@ -26,24 +26,24 @@ jobs:
 
       - name: Set Quarter 1
         id: quarter1
-        if: contains(0${MONTH}), [1-3])
+        if: contains(${MONTH}), 1) && contains(${MONTH}), 2) && contains(${MONTH}), 3)
         run: |
           echo 'Q1'
       - name: Set Quarter 2
         id: quarter2
-        if: contains(0${MONTH}), [4-6])
+        if: contains(${MONTH}), 4) && contains(${MONTH}), 5) && contains(${MONTH}), 6)
         run: |
           echo 'Q2'
 
       - name: Set Quarter 3
         id: quarter3
-        if: contains(0${MONTH}), [7-9])
+        if: contains(${MONTH}), 7) && contains(${MONTH}), 8) && contains(${MONTH}), 9)
         run: |
           echo 'Q3'
 
       - name: Set Quarter 4
         id: quarter4
-        if: contains(0${MONTH}), [10-12])
+        if: contains(${MONTH}), 10) && contains(${MONTH}), 11) && contains(${MONTH}), 12)
         run: |
           echo 'Q4'
 
