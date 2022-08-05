@@ -70,7 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
           ORGANIZATION: ${{ secrets.ORGANIZATION }}
-          PROJECT_NUMBER: 1
+          PROJECT_NUMBER: ${{ secrets.TEST_PROJECT_NUMBER }}
         run: |
           gh api graphql -f query='
             query($org: String!, $number: Int!) {
