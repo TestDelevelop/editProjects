@@ -56,7 +56,7 @@ jobs:
 
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="$YEAR_MONTH") |.id' project_data.json) >> $GITHUB_ENV
+          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR_MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
