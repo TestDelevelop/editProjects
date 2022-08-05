@@ -21,7 +21,31 @@ jobs:
       - name: Get date
         run: |
           echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
-          echo "YEAR_MONTH=$(date +"%Y-%m")" >> $GITHUB_ENV
+          echo "YEAR=$(date +"%Y")" >> $GITHUB_ENV
+          echo "MONTH=$(date +"%m")" >> $GITHUB_ENV
+
+      - name: Set Quarter 1
+        id: quarter1
+        if: contains(0${MONTH}), [1-3])
+        run: |
+          echo 'Q1'
+      - name: Set Quarter 2
+        id: quarter2
+        if: contains(0${MONTH}), [4-6])
+        run: |
+          echo 'Q2'
+
+      - name: Set Quarter 3
+        id: quarter3
+        if: contains(0${MONTH}), [7-9])
+        run: |
+          echo 'Q3'
+
+      - name: Set Quarter 4
+        id: quarter4
+        if: contains(0${MONTH}), [10-12])
+        run: |
+          echo 'Q4'
 
       - name: Get Project data
         env:
@@ -57,7 +81,9 @@ jobs:
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
           echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR_MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
+          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR}}-${{env.MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
+          echo 'QUARTER_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .id' project_data.json) >> $GITHUB_ENV
+          echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.YEAR_MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
