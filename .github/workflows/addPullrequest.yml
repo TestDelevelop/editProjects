@@ -28,6 +28,7 @@ jobs:
         id: quarter1
         if: contains(${{ env.MONTH }}), 1) && contains(${{ env.MONTH }}), 2) && contains(${{ env.MONTH }}), 3)
         run: |
+          echo ${{env.MONTH}}
           echo 'Q1'
       - name: Set Quarter 2
         id: quarter2
