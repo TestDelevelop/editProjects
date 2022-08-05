@@ -24,8 +24,6 @@ jobs:
           echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "YEAR=$(date +"%Y")" >> $GITHUB_ENV
           echo "MONTH=$(date +"%m")" >> $GITHUB_ENV
-          test=${{toJSON(github.event)}}
-          echo $test
 
       # 現在日時からQuarter項目の判定を行う
       - name: Set Quarter 1
@@ -103,6 +101,8 @@ jobs:
               }
             }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
 
+          test=`cat project_data.json`
+          echo $test
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
           echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
@@ -112,6 +112,7 @@ jobs:
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
+        if: ${{ github.event.action == 'ready_for_review' }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
           PR_ID: ${{ github.event.pull_request.node_id }}
@@ -125,6 +126,18 @@ jobs:
               }
             }' -f project=$PROJECT_ID -f pr=$PR_ID --jq '.data.addProjectV2ItemById.item.id')"
 
+      - name: Delete PR from Projects
+        if: ${{ github.event.action == 'converted_to_draft' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          PR_ID: ${{ github.event.pull_request.node_id }}
+        run: |
+          gh api graphql -f query='
+            mutation {
+              deleteProjectV2Item(input: {projectId: $project itemId: $item}){
+                deletedItemId
+              }
+            }' -f project=$PROJECT_ID -f pr=$item --silent
             echo 'ITEM_ID='$item_id >> $GITHUB_ENV
 
       - name: Set fields
