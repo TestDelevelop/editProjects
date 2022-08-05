@@ -106,8 +106,6 @@ jobs:
           echo 'QUARTER_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .id' project_data.json) >> $GITHUB_ENV
           echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.QUARTER}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
-          echo $QUARTER_FIELD_ID
-          echo $QUARTER_OPTION_ID
 
       - name: Add PR to Projects
         env:
@@ -139,6 +137,8 @@ jobs:
               $date_value: Date!
               $month_field: ID!
               $month_value: String!
+              $quarter_field: ID!
+              $quarter_value: String!
             ) {
               set_redmine_posted: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
