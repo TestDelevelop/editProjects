@@ -33,8 +33,8 @@ jobs:
             env.MONTH == '03'
           }}
         run: |
-          echo ${{env.MONTH}}
-          echo 'Q1'
+          echo "QUARTER=Q1 ${{ env.YEAR }} Jan-Mar" >> $GITHUB_ENV
+
       - name: Set Quarter 2
         id: quarter2
         if: >-
@@ -44,7 +44,7 @@ jobs:
             env.MONTH == '06'
           }}
         run: |
-          echo 'Q2'
+          echo "QUARTER=Q2 ${{ env.YEAR }} Apr-Jun" >> $GITHUB_ENV
 
       - name: Set Quarter 3
         id: quarter3
@@ -55,7 +55,7 @@ jobs:
             env.MONTH == '09'
           }}
         run: |
-          echo 'Q3'
+          echo "QUARTER=Q3 ${{ env.YEAR }} Jul-Sep" >> $GITHUB_ENV
 
       - name: Set Quarter 4
         id: quarter4
@@ -66,7 +66,7 @@ jobs:
             env.MONTH == '12'
           }}
         run: |
-          echo 'Q4'
+          echo "QUARTER=Q4 ${{ env.YEAR }} Oct-Dec" >> $GITHUB_ENV
 
       - name: Get Project data
         env:
@@ -104,7 +104,7 @@ jobs:
           echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
           echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR}}-${{env.MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'QUARTER_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.YEAR_MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
+          echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.QUARTER}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
@@ -174,4 +174,16 @@ jobs:
                   id
                   }
               }
-            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f month_field=$MONTH_FIELD_ID -f month_value=${{env.MONTH_OPTION_ID}} --silent
+              set_quarter: updateProjectV2ItemFieldValue(input: {
+                projectId: $project
+                itemId: $item
+                fieldId: $quarter_field
+                value: {
+                  singleSelectOptionId: $quarter_value
+                  }
+              }) {
+                projectV2Item {
+                  id
+                  }
+              }
+            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f month_field=$MONTH_FIELD_ID -f month_value=${{env.MONTH_OPTION_ID}} -f quarter_field=$QUARTER_FIELD_ID -f quarter_value=${{env.QUARTER_OPTION_ID}} --silent
