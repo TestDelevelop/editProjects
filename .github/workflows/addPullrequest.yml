@@ -112,7 +112,6 @@ jobs:
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
-        if: ${{ github.event.action == 'ready_for_review' }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
           PR_ID: ${{ github.event.pull_request.node_id }}
@@ -125,6 +124,7 @@ jobs:
                 }
               }
             }' -f project=$PROJECT_ID -f pr=$PR_ID --jq '.data.addProjectV2ItemById.item.id')"
+            echo 'ITEM_ID='$item_id >> $GITHUB_ENV
 
       - name: Delete PR from Projects
         if: ${{ github.event.action == 'converted_to_draft' }}
@@ -137,10 +137,10 @@ jobs:
               deleteProjectV2Item(input: {projectId: $project itemId: $item}){
                 deletedItemId
               }
-            }' -f project=$PROJECT_ID -f pr=$item --silent
-            echo 'ITEM_ID='$item_id >> $GITHUB_ENV
+            }' -f project=$PROJECT_ID -f item=$ITEM_ID --silent
 
       - name: Set fields
+        if: ${{ github.event.action == 'ready_for_review' }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
