@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - ready_for_review
+      - converted_to_draft
 
 jobs:
   build:
@@ -23,7 +24,10 @@ jobs:
           echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "YEAR=$(date +"%Y")" >> $GITHUB_ENV
           echo "MONTH=$(date +"%m")" >> $GITHUB_ENV
+          test=${{toJSON(github.event)}}
+          echo $test
 
+      # 現在日時からQuarter項目の判定を行う
       - name: Set Quarter 1
         id: quarter1
         if: >-
