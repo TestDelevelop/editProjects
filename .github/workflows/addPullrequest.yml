@@ -21,7 +21,52 @@ jobs:
       - name: Get date
         run: |
           echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
-          echo "YEAR_MONTH=$(date +"%Y-%m")" >> $GITHUB_ENV
+          echo "YEAR=$(date +"%Y")" >> $GITHUB_ENV
+          echo "MONTH=$(date +"%m")" >> $GITHUB_ENV
+
+      - name: Set Quarter 1
+        id: quarter1
+        if: >-
+          ${{
+            env.MONTH == '01' ||
+            env.MONTH == '02' ||
+            env.MONTH == '03'
+          }}
+        run: |
+          echo "QUARTER=Q1 ${{ env.YEAR }} - Jan-Mar" >> $GITHUB_ENV
+
+      - name: Set Quarter 2
+        id: quarter2
+        if: >-
+          ${{
+            env.MONTH == '04' ||
+            env.MONTH == '05' ||
+            env.MONTH == '06'
+          }}
+        run: |
+          echo "QUARTER=Q2 ${{ env.YEAR }} - Apr-Jun" >> $GITHUB_ENV
+
+      - name: Set Quarter 3
+        id: quarter3
+        if: >-
+          ${{
+            env.MONTH == '07' ||
+            env.MONTH == '08' ||
+            env.MONTH == '09'
+          }}
+        run: |
+          echo "QUARTER=Q3 ${{ env.YEAR }} - Jul-Sep" >> $GITHUB_ENV
+
+      - name: Set Quarter 4
+        id: quarter4
+        if: >-
+          ${{
+            env.MONTH == '10' ||
+            env.MONTH == '11' ||
+            env.MONTH == '12'
+          }}
+        run: |
+          echo "QUARTER=Q4 ${{ env.YEAR }} - Oct-Dec" >> $GITHUB_ENV
 
       - name: Get Project data
         env:
@@ -57,7 +102,9 @@ jobs:
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
           echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR_MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
+          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR}}-${{env.MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
+          echo 'QUARTER_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .id' project_data.json) >> $GITHUB_ENV
+          echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.QUARTER}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
@@ -90,6 +137,8 @@ jobs:
               $date_value: Date!
               $month_field: ID!
               $month_value: String!
+              $quarter_field: ID!
+              $quarter_value: String!
             ) {
               set_redmine_posted: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
@@ -127,4 +176,16 @@ jobs:
                   id
                   }
               }
-            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f month_field=$MONTH_FIELD_ID -f month_value=${{env.MONTH_OPTION_ID}} --silent
+              set_quarter: updateProjectV2ItemFieldValue(input: {
+                projectId: $project
+                itemId: $item
+                fieldId: $quarter_field
+                value: {
+                  singleSelectOptionId: $quarter_value
+                  }
+              }) {
+                projectV2Item {
+                  id
+                  }
+              }
+            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f month_field=$MONTH_FIELD_ID -f month_value=${{env.MONTH_OPTION_ID}} -f quarter_field=$QUARTER_FIELD_ID -f quarter_value=${{env.QUARTER_OPTION_ID}} --silent
