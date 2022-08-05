@@ -99,8 +99,6 @@ jobs:
               }
             }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
 
-          test=`cat project_data.json`
-          echo $test
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
           echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
@@ -108,6 +106,8 @@ jobs:
           echo 'QUARTER_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .id' project_data.json) >> $GITHUB_ENV
           echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.QUARTER}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
+          echo $QUARTER_FIELD_ID
+          echo $QUARTER_OPTION_ID
 
       - name: Add PR to Projects
         env:
