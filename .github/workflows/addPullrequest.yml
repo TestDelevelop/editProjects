@@ -18,6 +18,11 @@ jobs:
           TICKET=`echo ${{github.head_ref}}|sed "s/\//#/g"|sed -e "s/^.*#\(.*\)_.*$/\1/"`
           echo "REDMINE=https://redmine.precs.jp/issues/${TICKET}">> $GITHUB_ENV
 
+      - name: Get date
+        run: |
+          echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          echo "YEAR_MONTH=$(date +"%Y-%m")" >> $GITHUB_ENV
+
       - name: Get Project data
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -51,7 +56,8 @@ jobs:
 
           echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
           echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
-
+          echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
+          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR_MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
           echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
 
       - name: Add PR to Projects
@@ -70,9 +76,6 @@ jobs:
 
             echo 'ITEM_ID='$item_id >> $GITHUB_ENV
 
-      - name: Get date
-        run: echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
-
       - name: Set fields
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -85,6 +88,8 @@ jobs:
               $redmine_value: String!
               $date_field: ID!
               $date_value: Date!
+              $month_field: ID!
+              $month_value: String!
             ) {
               set_redmine_posted: updateProjectV2ItemFieldValue(input: {
                 projectId: $project
@@ -110,6 +115,16 @@ jobs:
                   id
                 }
               }
-
-            }' -f project=$PROJECT_ID -f item="$ITEM_ID" -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE --silent
-            
+              set_month: updateProjectV2ItemFieldValue(input: {
+                projectId: $project
+                itemId: $item
+                fieldId: $month_field
+                value: {
+                  singleSelectOptionId: $month_value
+                  }
+              }) {
+                projectV2Item {
+                  id
+                  }
+              }
+            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f month_field=$MONTH_FIELD_ID -f month_value=${{env.MONTH_OPTION_ID}} --silent
