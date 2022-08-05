@@ -26,25 +26,25 @@ jobs:
 
       - name: Set Quarter 1
         id: quarter1
-        if: contains(${{ env.MONTH }}), 1) && contains(${{ env.MONTH }}), 2) && contains(${{ env.MONTH }}), 3)
+        if: contains(${{ env.MONTH }}), '01') && contains(${{ env.MONTH }}), '02') && contains(${{ env.MONTH }}), '03')
         run: |
           echo ${{env.MONTH}}
           echo 'Q1'
       - name: Set Quarter 2
         id: quarter2
-        if: contains(${{ env.MONTH }}), 4) && contains(${{ env.MONTH }}), 5) && contains(${{ env.MONTH }}), 6)
+        if: contains(${{ env.MONTH }}), '04') && contains(${{ env.MONTH }}), '05') && contains(${{ env.MONTH }}), '06')
         run: |
           echo 'Q2'
 
       - name: Set Quarter 3
         id: quarter3
-        if: contains(${{ env.MONTH }}), 7) && contains(${{ env.MONTH }}), 8) && contains(${{ env.MONTH }}), 9)
+        if: contains(${{ env.MONTH }}), '07') && contains(${{ env.MONTH }}), '08') && contains(${{ env.MONTH }}), '09')
         run: |
           echo 'Q3'
 
       - name: Set Quarter 4
         id: quarter4
-        if: contains(${{ env.MONTH }}), 10) && contains(${{ env.MONTH }}), 11) && contains(${{ env.MONTH }}), 12)
+        if: contains(${{ env.MONTH }}), '10') && contains(${{ env.MONTH }}), '11') && contains(${{ env.MONTH }}), '12')
         run: |
           echo 'Q4'
 
