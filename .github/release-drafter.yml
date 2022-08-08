@@ -40,9 +40,11 @@ template: |
   $CHANGES
 autolabeler:
   - label: 🌟 Features
-    title:
-      - '/🌟 feat/i'
+    branch:
+      - '/^f?[/-_].+/'
   - label: 🔧 Bug Fixes
+    branch:
+      - '/^b?[/-_]/.+/'
     title:
       - '/🔧 fix/i'
   - label: 🗒 Documentation
