@@ -1,8 +1,8 @@
 {
-	"name": "fifth",
-	"version": "1.0.15",
-	"description": "EC Fashion System CLONA",
-	"author": "PRECS.inc",
+	"name": "editprojects",
+	"version": "1.0.0",
+	"description": "プロジェクト編集用",
+	"author": "test",
 	"license": "ISC",
 	"prettier": {},
 	"browserslist": [
