@@ -3,6 +3,7 @@ name: Add Pull Request to Project
 on:
   pull_request:
     types:
+      - opened
       - ready_for_review
       - converted_to_draft
 
@@ -145,7 +146,7 @@ jobs:
             }' -f project=$PROJECT_ID -f item=$ITEM_ID --silent
 
       - name: Set fields
-        if: ${{ github.event.action == 'ready_for_review' }}
+        if: ${{ github.event.action == 'ready_for_review' || github.event.action == 'opened'}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
