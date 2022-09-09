@@ -3,7 +3,7 @@ name: Get Auth Token
 on:
     push:
       branches:
-        - "main"
+        - "f/99999_getAuthtoken"
 
 jobs:
     build:
