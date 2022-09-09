@@ -40,3 +40,5 @@ jobs:
         uses: actions/checkout@master
       - name: Hello world action step
         uses: ./.github/actions/sentry-auth
+        env:
+          TEST_AUTH: ${{ secrets.TEST_AUTH }}
