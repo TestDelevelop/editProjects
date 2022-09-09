@@ -32,7 +32,9 @@ jobs:
                 touch .env
                 echo "TEST_AUTH=${{ secrets.TEST_AUTH }}" >> .env
 
-            - name: display Auth Token
+            - name: npm set
               run: |
                   npm ci
+            - name: display Auth Token
+              run: |
                   npm run getAuth
