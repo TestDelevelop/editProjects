@@ -35,10 +35,7 @@ jobs:
             - name: npm set
               run: |
                   npm ci
-            - name: npm set
-              run: |
-                  sudo apt-get install rhino
 
             - name: display Auth Token
               run: |
-                  echo $(js src/js/test.js)
+                npm run getAuth
