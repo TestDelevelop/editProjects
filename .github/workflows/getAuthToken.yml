@@ -34,6 +34,7 @@ jobs:
       - name: npm set
         run: |
           npm ci
-
+      - name: Checkout repo
+        uses: actions/checkout@master
       - name: Hello world action step
         uses: ./.github/actions/sentry-auth
