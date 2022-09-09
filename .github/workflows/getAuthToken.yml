@@ -1,0 +1,43 @@
+name: Get Auth Token
+
+on:
+  push:
+    branches:
+      - "f/99999_getAuthtoken"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.19.3]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: TestDelevelop/editProjects
+          path: ./
+          ref: main
+          token: "${{ secrets.PAT }}"
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Create dot env file
+        shell: bash
+        run: |
+          touch .env
+          echo "TEST_AUTH=${{ secrets.TEST_AUTH }}" >> .env
+
+      - name: npm set
+        run: |
+          npm ci
+
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Hello world action step
+        uses: ./.github/actions/sentry-auth
+        env:
+          TEST_AUTH: ${{ secrets.TEST_AUTH }}
