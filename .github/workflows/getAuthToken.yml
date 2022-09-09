@@ -34,7 +34,6 @@ jobs:
       - name: npm set
         run: |
           npm ci
-          cross-env NODE_ENV=production gulp prod
 
       - name: Checkout repo
         uses: actions/checkout@master
