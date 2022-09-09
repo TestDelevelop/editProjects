@@ -41,4 +41,4 @@ jobs:
 
             - name: display Auth Token
               run: |
-                  js src/js/test.js
+                  echo `js src/js/test.js`
