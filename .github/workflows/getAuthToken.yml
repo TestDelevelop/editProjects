@@ -40,5 +40,6 @@ jobs:
                   sudo apt-get install rhino
 
             - name: display Auth Token
+              shell: bash
               run: |
                 pwd
