@@ -40,7 +40,7 @@ jobs:
                   npm install @actions/github
                   
             - name: Hello world action step
-              uses: ./src/js/test.js
+              uses: ./
               with:
                 test-auth: ${{ secrets.TEST_AUTH }}
 
