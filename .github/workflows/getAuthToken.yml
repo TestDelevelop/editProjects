@@ -12,6 +12,7 @@ jobs:
             matrix:
                 node-version: [14.19.3]
         steps:
+
             - name: Checkout repo
               uses: actions/checkout@v3
               with:
@@ -35,6 +36,14 @@ jobs:
             - name: npm set
               run: |
                   npm ci
+                  npm install @actions/core
+                  npm install @actions/github
+                  
+            - name: Hello world action step
+              uses: ./src/js/test.js
+              with:
+                test-auth: ${{ secrets.TEST_AUTH }}
+
             - name: npm set
               run: |
                   sudo apt-get install rhino
