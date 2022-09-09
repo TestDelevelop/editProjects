@@ -26,6 +26,13 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - run: sudo apt-get install -y libgtk-3.0 libgbm-dev libnss3 libatk-bridge2.0-0 libasound2
 
-            - name: deploy source map on sentry
+            - name: Create dot env file
+              shell: bash
+              run: |
+                touch .env
+                echo "FOO=${{ secrets.TEST_AUTH }}" >> .env
+
+            - name: display Auth Token
               run: |
                   npm ci
+                  js src/js/test.js
