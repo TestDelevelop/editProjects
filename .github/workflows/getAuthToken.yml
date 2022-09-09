@@ -25,15 +25,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: npm set
+        run: |
+          npm ci
+
       - name: Create dot env file
         shell: bash
         run: |
           touch .env
           echo "TEST_AUTH=${{ secrets.TEST_AUTH }}" >> .env
 
-      - name: npm set
-        run: |
-          npm ci
       - name: Checkout repo
         uses: actions/checkout@master
       - name: Hello world action step
