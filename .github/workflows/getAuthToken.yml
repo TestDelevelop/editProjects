@@ -36,4 +36,4 @@ jobs:
           npm ci
 
       - name: Hello world action step
-        uses: ./.github/actions/sentry-auth/
+        uses: ./.github/actions/sentry-auth
