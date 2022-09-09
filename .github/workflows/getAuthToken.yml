@@ -30,9 +30,12 @@ jobs:
               shell: bash
               run: |
                 touch .env
-                echo "FOO=${{ secrets.TEST_AUTH }}" >> .env
+                echo "TEST_AUTH=${{ secrets.TEST_AUTH }}" >> .env
 
             - name: display Auth Token
               run: |
                   npm ci
-                  js src/js/test.js
+                  echo ${{runner.os}}
+            # - name: display Auth Token
+            #   shell: bash
+            #   run: js src/test.js

@@ -1,2 +1,2 @@
-const token = process.env.authToken;
+const token = process.env.TEST_AUTH;
 console.log(token);
