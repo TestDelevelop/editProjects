@@ -35,7 +35,4 @@ jobs:
             - name: display Auth Token
               run: |
                   npm ci
-                  echo ${{runner.os}}
-            # - name: display Auth Token
-            #   shell: bash
-            #   run: js src/test.js
+                  npm run getAuth

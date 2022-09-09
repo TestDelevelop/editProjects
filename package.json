@@ -19,6 +19,7 @@
 		"npm": "6.4.1"
 	},
 	"scripts": {
+		"getAuth": "js src/test.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "run-s checkPackageJson build:watch",
 		"prod": "run-s checkPackageJson build:prod",
