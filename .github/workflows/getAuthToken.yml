@@ -42,4 +42,4 @@ jobs:
             - name: display Auth Token
               shell: bash
               run: |
-                pwd
+                js ./src/js/test.js
