@@ -1,0 +1,31 @@
+name: Get Auth Token
+
+on:
+    push:
+      branches:
+        - "main"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.19.3]
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v3
+              with:
+                  repository: TestDelevelop/editProjects
+                  path: ./
+                  ref: main
+                  token: '${{ secrets.PAT }}'
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: sudo apt-get install -y libgtk-3.0 libgbm-dev libnss3 libatk-bridge2.0-0 libasound2
+
+            - name: deploy source map on sentry
+              run: |
+                  npm ci
