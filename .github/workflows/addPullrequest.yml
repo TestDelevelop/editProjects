@@ -6,6 +6,9 @@ on:
       - opened
       - ready_for_review
       - converted_to_draft
+  push:
+    branches:
+      - "f9999999999_testtestTEST"
 
 jobs:
   build:
