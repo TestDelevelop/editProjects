@@ -1,221 +1,43 @@
-name: Add Pull Request to Project
+name: Get Auth Token
 
 on:
-  pull_request:
-    types:
-      - ready_for_review
-      - converted_to_draft
+  push:
+    branches:
+      - "f/99999_getAuthtoken"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.19.3]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          repository: TestDelevelop/editProjects
+          path: ./
+          ref: main
+          token: "${{ secrets.PAT }}"
 
-      - name: Get Ticket and Create Redmine link
-        # コンテキストからheadのブランチ名を取得し、'/'を'#'に置き換え、'#'と'_'の間の文字を取得
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Create dot env file
+        shell: bash
         run: |
-          TICKET=`echo ${{github.head_ref}}|sed "s/\//#/g"|sed -e "s/^.*#\(.*\)_.*$/\1/"`
-          echo "REDMINE=https://redmine.precs.jp/issues/${TICKET}">> $GITHUB_ENV
+          touch .env
+          echo "TEST_AUTH=${{ secrets.TEST_AUTH }}" >> .env
 
-      - name: Get date
+      - name: npm set
         run: |
-          echo "DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
-          echo "YEAR=$(date +"%Y")" >> $GITHUB_ENV
-          echo "MONTH=$(date +"%m")" >> $GITHUB_ENV
+          npm ci
 
-      # 現在日時からQuarter項目の判定を行う
-      - name: Set Quarter 1
-        if: >-
-          ${{
-            env.MONTH == '01' ||
-            env.MONTH == '02' ||
-            env.MONTH == '03'
-          }}
-        run: |
-          echo "QUARTER=Q1 ${{ env.YEAR }} - Jan-Mar" >> $GITHUB_ENV
-
-      - name: Set Quarter 2
-        if: >-
-          ${{
-            env.MONTH == '04' ||
-            env.MONTH == '05' ||
-            env.MONTH == '06'
-          }}
-        run: |
-          echo "QUARTER=Q2 ${{ env.YEAR }} - Apr-Jun" >> $GITHUB_ENV
-
-      - name: Set Quarter 3
-        if: >-
-          ${{
-            env.MONTH == '07' ||
-            env.MONTH == '08' ||
-            env.MONTH == '09'
-          }}
-        run: |
-          echo "QUARTER=Q3 ${{ env.YEAR }} - Jul-Sep" >> $GITHUB_ENV
-
-      - name: Set Quarter 4
-        if: >-
-          ${{
-            env.MONTH == '10' ||
-            env.MONTH == '11' ||
-            env.MONTH == '12'
-          }}
-        run: |
-          echo "QUARTER=Q4 ${{ env.YEAR }} - Oct-Dec" >> $GITHUB_ENV
-
-      - name: Get Project data
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Hello world action step
+        uses: ./.github/actions/sentry-auth
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          ORGANIZATION: ${{ secrets.ORGANIZATION }}
-          PROJECT_NUMBER: ${{ secrets.TEST_PROJECT_NUMBER }}
-        run: |
-          gh api graphql -f query='
-            query($org: String!, $number: Int!) {
-              organization(login: $org){
-                projectV2(number: $number) {
-                  id
-                  fields(first:20) {
-                    nodes {
-                      ... on ProjectV2Field {
-                        id
-                        name
-                      }
-                      ... on ProjectV2SingleSelectField {
-                        id
-                        name
-                        options {
-                          id
-                          name
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
-
-          echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
-          echo 'DATE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Add Date") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'MONTH_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'MONTH_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Month") | .options[] | select(.name=="${{ env.YEAR}}-${{env.MONTH}}") |.id' project_data.json) >> $GITHUB_ENV
-          echo 'QUARTER_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .id' project_data.json) >> $GITHUB_ENV
-          echo 'QUARTER_OPTION_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Quarter") | .options[] | select(.name=="${{ env.QUARTER}}") |.id' project_data.json) >> $GITHUB_ENV
-          echo 'REDMINE_FIELD_ID='$(jq '.data.organization.projectV2.fields.nodes[] | select(.name== "Redmine") | .id' project_data.json) >> $GITHUB_ENV
-
-      # 更新と削除のために一度addProjectしてItem IDを取得する
-      - name: Add PR to Projects
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          PR_ID: ${{ github.event.pull_request.node_id }}
-        run: |
-          item_id="$( gh api graphql -f query='
-            mutation($project:ID!, $pr:ID!) {
-              addProjectV2ItemById(
-                input: {
-                  projectId: $project
-                  contentId: $pr
-                  }
-                ) {
-                item {
-                  id
-                }
-              }
-            }' -f project=$PROJECT_ID -f pr=$PR_ID --jq '.data.addProjectV2ItemById.item.id')"
-            echo 'ITEM_ID='$item_id >> $GITHUB_ENV
-
-      - name: Delete PR from Projects
-        if: ${{ github.event.action == 'converted_to_draft' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          PR_ID: ${{ github.event.pull_request.node_id }}
-        run: |
-          gh api graphql -f query='
-            mutation($project:ID!, $item:ID!)  {
-              deleteProjectV2Item(
-                input: {
-                  projectId: $project
-                  itemId: $item
-                }
-              ){
-                deletedItemId
-              }
-            }' -f project=$PROJECT_ID -f item=$ITEM_ID --silent
-
-      - name: Set fields
-        if: ${{ github.event.action == 'ready_for_review' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        run: |
-          gh api graphql -f query='
-            mutation (
-              $project: ID!
-              $item: ID!
-              $redmine_field: ID!
-              $redmine_value: String!
-              $date_field: ID!
-              $date_value: Date!
-              $month_field: ID!
-              $month_value: String!
-              $quarter_field: ID!
-              $quarter_value: String!
-            ) {
-              set_redmine_posted: updateProjectV2ItemFieldValue(
-                input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $redmine_field
-                  value: {
-                    text: $redmine_value
-                  }
-                }
-              ) {
-                projectV2Item {
-                  id
-                }
-              }
-              set_date_posted: updateProjectV2ItemFieldValue(
-                input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $date_field
-                  value: {
-                    date: $date_value
-                  }
-                }
-              ) {
-                projectV2Item {
-                  id
-                }
-              }
-              set_month: updateProjectV2ItemFieldValue(
-                input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $month_field
-                  value: {
-                    singleSelectOptionId: $month_value
-                  }
-                }
-              ) {
-                projectV2Item {
-                  id
-                }
-              }
-              set_quarter: updateProjectV2ItemFieldValue(
-                input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $quarter_field
-                  value: {
-                    singleSelectOptionId: $quarter_value
-                  }
-                }
-              ) {
-                projectV2Item {
-                  id
-                }
-              }
-            }' -f project=$PROJECT_ID -f item=$ITEM_ID -f redmine_field=$REDMINE_FIELD_ID -f redmine_value=$REDMINE -f date_field=$DATE_FIELD_ID -f date_value=$DATE -f month_field=$MONTH_FIELD_ID -f month_value=${{env.MONTH_OPTION_ID}} -f quarter_field=$QUARTER_FIELD_ID -f quarter_value=${{env.QUARTER_OPTION_ID}} --silent
+          TEST_AUTH: ${{ secrets.TEST_AUTH }}
