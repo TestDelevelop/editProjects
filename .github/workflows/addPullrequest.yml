@@ -6,6 +6,9 @@ on:
       - opened
       - ready_for_review
       - converted_to_draft
+  push:
+    branches:
+      - "f9999999999_testtestTEST"
 
 jobs:
   build:
@@ -14,6 +17,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: TEST
+        run: |
+          echo ${{ github.event.action }}
+        
       - name: Get Ticket and Create Redmine link
         # コンテキストからheadのブランチ名を取得し、'/'を'#'に置き換え、'#'と'_'の間の文字を取得
         run: |
