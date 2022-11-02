@@ -108,7 +108,6 @@ jobs:
 
       # 更新と削除のために一度addProjectしてItem IDを取得する
       - name: Add PR to Projects
-        if: ${{ github.event.action == 'ready_for_review' || github.event.action == 'opened' }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
           PR_ID: ${{ github.event.pull_request.node_id }}
@@ -147,7 +146,7 @@ jobs:
             }' -f project=$PROJECT_ID -f item=$ITEM_ID --silent
 
       - name: Set fields
-        if: ${{ github.event.action == 'ready_for_review' || github.event.action == 'opened' }}
+        if: ${{ (github.event.action == 'ready_for_review' || github.event.action == 'opened') && github.event.pull_request.draft == false }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
