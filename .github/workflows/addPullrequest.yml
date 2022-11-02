@@ -14,6 +14,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: TEST
+        if: ${{ github.event.draft == ture }}
+        run: |
+          echo 'true'
+
+      - name: TEST2
+        if: ${{ github.event.draft == false }}
+        run: |
+          echo 'false'
+
       - name: Get Ticket and Create Redmine link
         # コンテキストからheadのブランチ名を取得し、'/'を'#'に置き換え、'#'と'_'の間の文字を取得
         run: |
