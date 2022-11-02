@@ -14,12 +14,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: TEST
-        if: ${{ github.event.draft == ture }}
+        if: ${{ github.event.draft == 'ture' }}
         run: |
           echo 'true'
 
       - name: TEST2
-        if: ${{ github.event.draft == false }}
+        if: ${{ github.event.draft === 'false' }}
         run: |
           echo 'false'
 
