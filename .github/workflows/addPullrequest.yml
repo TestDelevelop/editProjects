@@ -20,6 +20,7 @@ jobs:
       - name: Get Ticket and Create Redmine link
         # コンテキストからheadのブランチ名を取得し、'/'を'#'に置き換え、'#'と'_'の間の文字を取得
         run: |
+          echo ${{github.event.action}}
           TICKET=`echo ${{github.head_ref}}|sed "s/\//#/g"|sed -e "s/^.*#\(.*\)_.*$/\1/"`
           echo "REDMINE=https://redmine.precs.jp/issues/${TICKET}">> $GITHUB_ENV
 
