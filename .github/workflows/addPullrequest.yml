@@ -13,6 +13,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        
+      - name: TEST
+        run: |
+          echo ${{ github.event }}
 
       - name: Get Ticket and Create Redmine link
         # コンテキストからheadのブランチ名を取得し、'/'を'#'に置き換え、'#'と'_'の間の文字を取得
