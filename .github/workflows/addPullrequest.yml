@@ -14,14 +14,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: TEST
-        if: ${{ github.event.pull_request.draft == true }}
+        if: ${{ (github.event.action == 'ready_for_review' || github.event.action == 'opened') && github.event.pull_request.draft == false }}
         run: |
-          echo 'true'
-
-      - name: TEST2
-        if: ${{ github.event.pull_request.draft == false }}
-        run: |
-          echo 'false'
+          echo 'not draft'
 
       - name: Get Ticket and Create Redmine link
         # コンテキストからheadのブランチ名を取得し、'/'を'#'に置き換え、'#'と'_'の間の文字を取得
